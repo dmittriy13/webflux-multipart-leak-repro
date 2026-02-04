@@ -1,0 +1,39 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7878:7878"
+    environment:
+      JAVA_TOOL_OPTIONS: "-Dio.netty.leakDetection.level=advanced -Dio.netty.leakDetection.targetRecords=32 -Dio.netty.leakDetection.samplingInterval=64"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: [ "CMD-SHELL", "grep -q 'Started .* in' /tmp/spring.log || exit 1" ]
+      interval: 5s
+      retries: 10
+
+  # for simulate slow network
+  toxi-proxy:
+    image: ghcr.io/shopify/toxiproxy:2.11.0
+    command: -host 0.0.0.0 -config /config/toxiproxy.json
+    ports:
+      - "8474:8474" # API
+      - "7777:7777" # proxy
+
+  k6:
+    build:
+      context: .
+      dockerfile: k6/Dockerfile
+    environment:
+      LT_BASE_URL: "http://toxi-proxy:7777"
+      LT_PROXY_CONFIG_URL: "http://toxi-proxy:8474"
+      LT_REQ_TIMEOUT: "1s"
+    depends_on:
+      app:
+        condition: service_healthy
+      toxi-proxy:
+        condition: service_started
