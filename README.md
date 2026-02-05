@@ -2,6 +2,10 @@
 
 Minimal repro project for an off-heap ByteBuf leak when the client aborts during multipart upload.
 
+## Requirements
+
+- java 21
+
 ## Structure
 
 - `src/main/java/org/example/UploadController.java` — two endpoints:
@@ -20,8 +24,14 @@ Default k6 settings are provided via environment variables in `docker-compose.ym
 ## Quick start
 
 1) Build the app jar:
+Linux:
 ```bash
-mvn clean package
+./mvnw clean package
+```
+
+Windows:
+```bash
+./mvnw.cmd clean package
 ```
 
 2) Run app + k6 with Docker Compose:
