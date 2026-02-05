@@ -1,5 +1,6 @@
 #!/bin/sh
-set -eu
+set -e
+set -u
 
 FILE_DIR="/loadtest/files"
 FILE_PATH="${FILE_DIR}/loadtest_1mb.bin"
