@@ -24,6 +24,7 @@ Default k6 settings are provided via environment variables in `docker-compose.ym
 ## Quick start
 
 1) Build the app jar:
+
 Linux:
 ```bash
 ./mvnw clean package
